@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class EnemyUIManager : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class EnemyUIManager : MonoBehaviour
 
     public void UpdateHP(int hp)
     {
-        hpSlider.value = hp;
+        //hpSlider.value = hp;
+        hpSlider.DOValue(hp, 1f);// HPの減少を滑らかに表現
     }
 }

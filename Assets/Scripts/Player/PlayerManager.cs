@@ -11,12 +11,13 @@ public class PlayerManager : MonoBehaviour
 
     public Collider weaponCollider; // 武器のコリジョン
     public GameObject GameOverText;
-    public Transform target;
+    public Transform target; // エネミー情報
     // プレイヤー情報管理
     public PlayerUIManager playerUIManager;
     public int MaxHP = 100;
     int hp;
     bool IsDie;
+    public bool IsAttack = false;
 
     // Start is called before the first frame update
     void Start()// Update前に一度実行
@@ -43,31 +44,51 @@ public class PlayerManager : MonoBehaviour
         // 攻撃入力：スペースキーで攻撃
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            transform.LookAt(target);
+            IsAttack = true;
             animator.SetTrigger("Attack");
             // Debug.Log("攻撃");
         }
-        
+
+        UpdateRotaion();
+
     }
 
-    void LookAtTarget()
+    void UpdateRotaion()
     {
-        float distance = Vector3.Distance(transform.position, target.position);
+        if (IsDie) return;
+
+        // デフォルトでは入力方向へキャラクターが向く
+        Vector3 direction = new Vector3(x, 0, z);
+        
+
+        if (IsAttack && target != null) // 攻撃中かつ、ターゲットがいる場合、敵を見る
+        {
+            float distance = Vector3.Distance(transform.position, target.position);
+            if (distance <= 2f)// ターゲットとの距離が近い場合
+            {
+                direction = target.position - transform.position; // 敵の方向と自分の位置を引いた値を向きに代入
+            }
+        }
+       
+        direction.y = 0;
+
+        if (direction.sqrMagnitude > 0.001f)
+        {
+            transform.rotation = Quaternion.LookRotation(direction);
+        }
     }
 
     private void FixedUpdate()
     {
         if (IsDie) return;
 
-        Vector3 direction = transform.position + new Vector3(x, 0, z) * moveSpeed;
-        transform.LookAt(direction);
-
         // 速度を設定
         rb.velocity = new Vector3(x, 0, z) * moveSpeed;
         // Idle-> Run <-Idle
         animator.SetFloat("RunSpeed", rb.velocity.magnitude); // magnitude＝速度の大きさ
-
     }
+
+
 
     // 武器のコリジョン有効 / 無効
     public void HideColliderWeapon()

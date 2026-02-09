@@ -14,7 +14,7 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
     // アニメーション中に呼ばれる：Update
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-
+        
     }
 
     // アニメーションの遷移終了時に実行される
@@ -22,6 +22,7 @@ public class PlayerAttackBehaviour : StateMachineBehaviour
     {
         // 攻撃中アニメーションの移動再開
         animator.GetComponent<PlayerManager>().moveSpeed = 2.5f;
+        animator.GetComponent<PlayerManager>().IsAttack = false;
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

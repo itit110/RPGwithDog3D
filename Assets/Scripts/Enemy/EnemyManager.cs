@@ -51,7 +51,6 @@ public class EnemyManager : MonoBehaviour
 
     public void LookAtTarget()
     {
-
         transform.LookAt(target);
     }
 
