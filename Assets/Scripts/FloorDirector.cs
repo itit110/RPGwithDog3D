@@ -4,14 +4,22 @@ using UnityEngine;
 
 public class FloorDirector : MonoBehaviour
 {
-    // フロアーの数
+    // フロアーの定数
     public const int FLOOR_X = 30;
     public const int FLOOR_Y = 30;
 
-    [SerializeField] float floorSize = 0.5f;
-    [SerializeField] float floorY = 1f;
+    // フロアーのサイズ感
+    [SerializeField] float floorSize = 1f;
+    [SerializeField] float floorThickess = 0.5f; // Floorの厚み
 
-    // 3色フロアーのプレハブ
+    // 土台ブロックのサイズ
+    public float cubeSize = 1f;
+    public float cubeY = 0.55f;
+
+    // ブロックに乗せるフロアーの位置
+    float floorY;
+
+    // フロアーのプレハブ
     public GameObject[] prefabFloor;
 
     public enum FloorType// フロアーのタイルを列挙
@@ -24,8 +32,7 @@ public class FloorDirector : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("FloorDirector Start 呼ばれた");
-        Debug.Log($"prefabFloor.Length = {prefabFloor?.Length}");
+        floorY = (cubeY + cubeSize / 2f) + floorThickess / 2f;
 
         for (int x = 0; x < FLOOR_X; x++)
         {
@@ -39,19 +46,15 @@ public class FloorDirector : MonoBehaviour
                 FloorType type = GetFloor(x, y);
                 GameObject prefab = GetPrefab(type);
 
-                //if (prefab == null) continue;
-
                 Instantiate(prefab, pos, Quaternion.identity);
-
+                
             }
         }
-
     }
 
     FloorType GetFloor(int x, int y)
     {
         int value = (x + y) % 3;
-
         switch (value)
         {
             case 0: return FloorType.Red;
@@ -66,8 +69,8 @@ public class FloorDirector : MonoBehaviour
         int index = (int)type;
 
         if (prefabFloor == null || prefabFloor.Length <= index) return null;
-        
+
         return prefabFloor[index];
     }
-   
+
 }

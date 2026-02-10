@@ -6,11 +6,12 @@ using DG.Tweening;
 
 public class EnemyUIManager : MonoBehaviour
 {
-    public Slider hpSlider;
+    public Slider hpSlider;// エネミーのHPゲージ
 
-    public void Init(EnemyManager enemyManager)
+    public void Init(EnemyManager enemyManager) // エネミーのステータス初期化
     {
-        hpSlider.maxValue = enemyManager.MaxHP;
+        // エネミーUIとエネミーHPと関連付け
+        hpSlider.maxValue = enemyManager.MaxHP; 
         hpSlider.value = enemyManager.MaxHP;
     }
 

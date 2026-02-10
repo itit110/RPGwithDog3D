@@ -5,13 +5,15 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     Rigidbody rb; // リジッドボディ
-    Animator animator;
+    Animator animator;// アニメーション取得
     float x, z; //移動入力用
     public float moveSpeed = 2.5f; // 移動値インスペクターから操作可能
 
     public Collider weaponCollider; // 武器のコリジョン
     public GameObject GameOverText;
-    public Transform target; // エネミー情報
+    public Transform target; // エネミー情報取得
+    public FloorDirector stage; //ステージ情報
+
     // プレイヤー情報管理
     public PlayerUIManager playerUIManager;
     public int MaxHP = 100;
@@ -26,16 +28,15 @@ public class PlayerManager : MonoBehaviour
         hp = MaxHP;
         playerUIManager.Init(this); // HPゲージ初期化
 
-        rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>(); // 物理取得
         animator = GetComponent<Animator>();// animatorコンポーネント取得
 
-        HideColliderWeapon();
+        HideColliderWeapon(); // 武器のコリジョンを初期セットでオフ
     }
 
-    // Update is called once per frame
     void Update()// 毎フレームごとに更新
     {
-        if (IsDie) return;
+        if (IsDie) return;// 死んでたらreturn
 
         // キーボード入力を使用して移動
         x = Input.GetAxisRaw("Horizontal");
@@ -49,8 +50,21 @@ public class PlayerManager : MonoBehaviour
             // Debug.Log("攻撃");
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+            UnityEditor.EditorApplication.isPlaying = false;
+        }
+        // 入力方向にプレイヤーを向ける
         UpdateRotaion();
-
+        
+        /*
+        if (IsOutOfStage(transform.position))
+        {
+            Debug.Log("場外");
+            //IsDie = true; 
+        }
+        */
     }
 
     void UpdateRotaion()
@@ -69,12 +83,12 @@ public class PlayerManager : MonoBehaviour
                 direction = target.position - transform.position; // 敵の方向と自分の位置を引いた値を向きに代入
             }
         }
-       
+
         direction.y = 0;
 
         if (direction.sqrMagnitude > 0.001f)
         {
-            transform.rotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.LookRotation(direction);// ブレ防止
         }
     }
 
@@ -84,11 +98,10 @@ public class PlayerManager : MonoBehaviour
 
         // 速度を設定
         rb.velocity = new Vector3(x, 0, z) * moveSpeed;
+
         // Idle-> Run <-Idle
         animator.SetFloat("RunSpeed", rb.velocity.magnitude); // magnitude＝速度の大きさ
     }
-
-
 
     // 武器のコリジョン有効 / 無効
     public void HideColliderWeapon()
@@ -104,20 +117,19 @@ public class PlayerManager : MonoBehaviour
     void Damage(int damage)
     {
         hp -= damage;
-        if (hp <= 0)
+        if (hp <= 0)// HPが0以下になった場合
         {
             hp = 0;
-            animator.SetTrigger("Die");
+            animator.ResetTrigger("Hurt"); // ダメージリセット
+            animator.SetTrigger("Die");// 死亡アニメーション
             IsDie = true; //HPでフラグをtrue
 
-            animator.ResetTrigger("Hurt"); // ダメージリセット
             rb.isKinematic = true; // Die後の動きを止める
-
-            GameOverText.SetActive(true);
+            
+            GameOverText.SetActive(true);// ゲームオーバーを表示
         }
 
-        playerUIManager.UpdateHP(hp);
-
+        playerUIManager.UpdateHP(hp);//HP減少のUI処理
         Debug.Log("プレイヤー残りHP：" + hp);
     }
 
@@ -126,12 +138,19 @@ public class PlayerManager : MonoBehaviour
         if (IsDie) return; // 死んだ場合、ダメージ処理を行わない
        
         Damager damager = other.GetComponent<Damager>();// Damagerに限定
-        if (damager != null)
+        if (damager != null)// 当たり判定にぶつかったら
         {
-            // 当たり判定にぶつかったら
             //Debug.Log("プレイヤーにダメージ");
             animator.SetTrigger("Hurt");
             Damage(damager.damage);// Damager内で定義したダメージ
         }
     }
+
+    /*
+    public bool IsOutOfStage(Vector3 pos)
+    {
+        return pos.x < stage.MinX || pos.x > stage.MaxX
+            || pos.z < stage.MinZ || pos.z > stage.MinZ;
+    }
+   */
 }
