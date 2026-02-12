@@ -6,13 +6,13 @@ using UnityEngine.SceneManagement;
 // ボタンを押すとSceneの遷移
 public class TitleSceneManager : MonoBehaviour
 {
-    GameObject QuitButton;
+    public GameObject QuitButton;
 
     private void Start()
     {
         
-        if(QuitButton) OnQuitButton();
     }
+
     public void OnStartButton()
     {
         SceneManager.LoadScene("BattleScene");

@@ -10,6 +10,7 @@ public class PlayerHurtBehaviour : StateMachineBehaviour
         animator.ResetTrigger("Hurt");
         // 攻撃中アニメーションの移動静止 
         animator.GetComponent<PlayerManager>().moveSpeed = 0.4f;
+        animator.GetComponent<PlayerManager>().HideColliderWeapon();
     }
 
     // アニメーション中に呼ばれる：Update

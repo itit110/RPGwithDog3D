@@ -23,11 +23,24 @@ public class EnemyManager : MonoBehaviour
     public EnemyUIManager enemyUIManager;
     public int MaxHP = 100;
     int hp = 100;
+    bool IsDie;
+    bool IsDieAfter;
 
-    // Start is called before the first frame update
+    // 行動遅延用
+    float Delay = 2.0f;
+    float DelayTimer;
+    bool IsDelay = false;
+
+    // テキストアニメーション用途
+    float AnimTime = 1f;
+    float textAnimTimer = 0f;
+    bool IsAnimation = false;
+
     void Start()
     {
         // エネミー情報の初期化処理
+        IsDie = false;
+        IsDieAfter = false;
         hp = MaxHP;
         enemyUIManager.Init(this);
 
@@ -40,10 +53,15 @@ public class EnemyManager : MonoBehaviour
 
     void Update()
     {
+        if (IsDieAfter) return;
+
         agent.destination = target.position; // プレイヤーの位置を取得更新
 
         // ターゲットとの距離によって、Distanceにセットしアニメーション更新
         animator.SetFloat("Distance", agent.remainingDistance);
+
+        GameClear();
+        TextAnimation();
     }
 
     public void LookAtTarget()// ターゲットの方向を向く
@@ -64,18 +82,18 @@ public class EnemyManager : MonoBehaviour
     // 敵ダメージ処理
     void Damage(int damage)
     {
+        if (IsDieAfter) return;
+
         hp -= damage;
         if (hp <= 0) // エネミーHPが0以下になったら
         {
             hp = 0;
             animator.SetTrigger("Die");// 死亡アニメーション
             animator.ResetTrigger("EnemyHurt");// ダメージ処理の停止
-            Destroy(gameObject, 2f); //2秒後オブジェクトを破棄
-
-            //ゲームクリアテキストの表示
-            GameClearText.SetActive(true);
             
+            IsDie = true;
         }
+
         enemyUIManager.UpdateHP(hp);// HPゲージ更新
         Debug.Log("敵の残りHP：" + hp);
     }
@@ -87,6 +105,53 @@ public class EnemyManager : MonoBehaviour
             // 当たり判定にぶつかったら
             animator.SetTrigger("EnemyHurt");
             Damage(damager.damage);
+        }
+    }
+
+    void GameClear()
+    {
+        if (IsDieAfter) return;
+
+        // 死んだ直後のゲームオーバー処理
+        if (IsDie)
+        {
+            DelayTimer += Time.deltaTime;// 遅延タイマーをセット
+
+            if (DelayTimer >= Delay) // タイマーが設定した値に達したら
+            {
+                GameClearText.SetActive(true);// ゲームオーバーを有効化
+
+                IsAnimation = true;// アニメーションフラグ
+                IsDelay = false; // 遅延オフ
+            }
+        }
+    }
+
+    void TextAnimation()
+    {
+        if (IsDieAfter) return;
+
+        if (IsAnimation)
+        {
+            Destroy(gameObject, 2f); //2秒後オブジェクトを破棄
+            textAnimTimer += Time.deltaTime; // アニメタイマーセット
+
+            float time = textAnimTimer / AnimTime; //取得した値を設定した値で割る
+            time = Mathf.Clamp01(time);
+
+            GameClearText.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * 2, time);
+
+            GameClearText.transform.rotation =
+                Quaternion.Lerp(
+                    Quaternion.Euler(0, 0, 180), 
+                    Quaternion.Euler(0, 0, 0),
+                    time);
+
+            if (time >= 1f) // アニメーションが終わると死後処理へ移行
+            {
+                IsAnimation = false;
+                IsDieAfter = true;
+            }
         }
     }
 }

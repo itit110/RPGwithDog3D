@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerAttackBehaviour : StateMachineBehaviour
 {
+    Animator animator;
+   
     // アニメーション開始時に呼ばれる：Start
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
