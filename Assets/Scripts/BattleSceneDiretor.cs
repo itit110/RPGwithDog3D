@@ -1,19 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BattleSceneDiretor : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public GameObject QuitButton;
+    public GameObject RetryBtn;
+    public GameObject TitleBtn;
+
+    public void DieAfterUI()
     {
-        
+        RetryBtn.SetActive(true);
+        TitleBtn.SetActive(true);
+        QuitButton.SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OnRetryButton()
     {
-        
+        Debug.Log("Retry pressed");
+        SceneManager.LoadScene("BattleScene");
+    }
+
+    public void OnTitleButton()
+    {
+        SceneManager.LoadScene("TitleScene");
     }
 
     public void OnQuitButton()

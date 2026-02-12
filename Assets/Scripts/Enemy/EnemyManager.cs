@@ -18,6 +18,7 @@ public class EnemyManager : MonoBehaviour
 
     public GameObject GameClearText; // UI
     public Collider weaponCollider; // コリジョン
+    public BattleSceneDiretor battle;
 
     // エネミー情報関連
     public EnemyUIManager enemyUIManager;
@@ -112,9 +113,11 @@ public class EnemyManager : MonoBehaviour
     {
         if (IsDieAfter) return;
 
+        if (!IsDie) return;
+
+        battle.DieAfterUI();
         // 死んだ直後のゲームオーバー処理
-        if (IsDie)
-        {
+        
             DelayTimer += Time.deltaTime;// 遅延タイマーをセット
 
             if (DelayTimer >= Delay) // タイマーが設定した値に達したら
@@ -123,8 +126,12 @@ public class EnemyManager : MonoBehaviour
 
                 IsAnimation = true;// アニメーションフラグ
                 IsDelay = false; // 遅延オフ
+
+                battle.DieAfterUI();
+
+               
             }
-        }
+        
     }
 
     void TextAnimation()
@@ -133,7 +140,6 @@ public class EnemyManager : MonoBehaviour
 
         if (IsAnimation)
         {
-            Destroy(gameObject, 2f); //2秒後オブジェクトを破棄
             textAnimTimer += Time.deltaTime; // アニメタイマーセット
 
             float time = textAnimTimer / AnimTime; //取得した値を設定した値で割る
@@ -146,6 +152,7 @@ public class EnemyManager : MonoBehaviour
                     Quaternion.Euler(0, 0, 180), 
                     Quaternion.Euler(0, 0, 0),
                     time);
+            Destroy(gameObject, 2f); //2秒後オブジェクトを破棄
 
             if (time >= 1f) // アニメーションが終わると死後処理へ移行
             {

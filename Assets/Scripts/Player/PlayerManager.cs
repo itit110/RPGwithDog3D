@@ -11,6 +11,8 @@ public class PlayerManager : MonoBehaviour
 
     public Collider weaponCollider; // 武器のコリジョン
     public GameObject GameOverText;
+    
+    public BattleSceneDiretor battle;
     public Transform target; // エネミー情報取得
     public FloorDirector stage; //ステージ情報
 
@@ -131,11 +133,13 @@ public class PlayerManager : MonoBehaviour
                     Quaternion.Euler(0, 0, 180),
                     Quaternion.Euler(0, 0, 0),
                     time);
+            battle.DieAfterUI();
 
             if (time >= 1f)
             {
                 IsAnimation = false;
                 IsDieAfter = true;
+
             }
         }
     }
