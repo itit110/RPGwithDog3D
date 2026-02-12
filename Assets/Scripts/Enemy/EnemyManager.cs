@@ -14,7 +14,7 @@ public class EnemyManager : MonoBehaviour
     public Transform target; // プレイヤー
     NavMeshAgent agent; // プレイヤーを追尾するエネミー
 
-    Animator animator; // アニメーション取得
+    public Animator animator; // アニメーション取得
 
     public GameObject GameClearText; // UI
     public Collider weaponCollider; // コリジョン
@@ -30,7 +30,6 @@ public class EnemyManager : MonoBehaviour
     // 行動遅延用
     float Delay = 2.0f;
     float DelayTimer;
-    bool IsDelay = false;
 
     // テキストアニメーション用途
     float AnimTime = 1f;
@@ -54,7 +53,7 @@ public class EnemyManager : MonoBehaviour
 
     void Update()
     {
-        if (IsDieAfter) return;
+        if (!IsDieAfter) 
 
         agent.destination = target.position; // プレイヤーの位置を取得更新
 
@@ -125,11 +124,10 @@ public class EnemyManager : MonoBehaviour
                 GameClearText.SetActive(true);// ゲームオーバーを有効化
 
                 IsAnimation = true;// アニメーションフラグ
-                IsDelay = false; // 遅延オフ
-
+               
                 battle.DieAfterUI();
 
-               
+                Destroy(gameObject, 2f); //2秒後オブジェクトを破棄
             }
         
     }
@@ -152,7 +150,6 @@ public class EnemyManager : MonoBehaviour
                     Quaternion.Euler(0, 0, 180), 
                     Quaternion.Euler(0, 0, 0),
                     time);
-            Destroy(gameObject, 2f); //2秒後オブジェクトを破棄
 
             if (time >= 1f) // アニメーションが終わると死後処理へ移行
             {

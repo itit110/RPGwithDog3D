@@ -6,19 +6,18 @@ using UnityEngine.SceneManagement;
 public class BattleSceneDiretor : MonoBehaviour
 {
     public GameObject QuitButton;
-    public GameObject RetryBtn;
-    public GameObject TitleBtn;
+    public GameObject RetryButton;
+    public GameObject TitleButton;
 
     public void DieAfterUI()
     {
-        RetryBtn.SetActive(true);
-        TitleBtn.SetActive(true);
+        RetryButton.SetActive(true);
+        TitleButton.SetActive(true);
         QuitButton.SetActive(true);
     }
 
     public void OnRetryButton()
     {
-        Debug.Log("Retry pressed");
         SceneManager.LoadScene("BattleScene");
     }
 

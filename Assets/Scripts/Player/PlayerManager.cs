@@ -42,6 +42,7 @@ public class PlayerManager : MonoBehaviour
         // プレイヤー情報初期化
         IsDie = false;
         IsDieAfter = false;
+        
         hp = MaxHP;
         stamina = MaxStamina;
         playerUIManager.Init(this); // HPゲージ初期化
@@ -98,6 +99,7 @@ public class PlayerManager : MonoBehaviour
     void GameOver()
     {
         if (IsDieAfter) return;
+        if (!IsDie) return;
 
         // 死んだ直後のゲームオーバー処理
         if (IsDie)
@@ -110,54 +112,53 @@ public class PlayerManager : MonoBehaviour
 
                 IsAnimation = true;// アニメーションフラグ
                 IsDelay = false; // 遅延オフ
+                target.GetComponent<EnemyManager>().animator.SetTrigger("Idle");
+                target.GetComponent<EnemyManager>().animator.SetFloat("Distance", 2.5f);
             }
+           
         }
         
     }
 
     void TextAnimation()
     {
-        if (IsDieAfter) return;
+        if (!IsAnimation) return;
 
-        if (IsAnimation)
-        {
             textAnimTimer += Time.deltaTime; // アニメタイマーセット
 
             float time = textAnimTimer / AnimTime; //取得した値を設定した値で割る
             time = Mathf.Clamp01(time);
 
-            GameOverText.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * 2, time);
+            GameOverText.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * 1f, time);
 
             GameOverText.transform.rotation =
                 Quaternion.Lerp(
                     Quaternion.Euler(0, 0, 180),
                     Quaternion.Euler(0, 0, 0),
                     time);
+
+        if (time >= 1f)
+        {
+            IsAnimation = false;
+            IsDieAfter = true;
             battle.DieAfterUI();
-
-            if (time >= 1f)
-            {
-                IsAnimation = false;
-                IsDieAfter = true;
-
-            }
         }
     }
 
     void Attack()
     {
-        if (stamina >= 0)// スタミナが20以上であれば攻撃可能
+        if (stamina <= 1) { IsDelay = true; }
+
+        if (stamina >= 10)// スタミナが0以上であれば攻撃可能
         {
-            if (stamina >= 10)
-            {
                 stamina -= 10;// 攻撃ごとにスタミナが20減少
-            }
-            if(stamina <= 0) // スタミナが0以下の場合
-            {
-                stamina = 0;
-                IsDelay = true;// 遅延フラグを真
-                DelayTimer = 0f;// 遅延タイマーをセット
-            }
+            
+        if(stamina <= 0) // スタミナが0以下の場合
+        {
+        stamina = 0;
+        IsDelay = true;// 遅延フラグを真
+        DelayTimer = 0f;// 遅延タイマーをセット
+        }
 
             playerUIManager.UpdateStamina(stamina);
             IsAttack = true;
