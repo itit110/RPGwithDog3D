@@ -17,6 +17,7 @@ public class PlayerManager : MonoBehaviour
     public FloorDirector stage; //ステージ情報
 
     // プレイヤー情報管理
+    PlayerAudioSouce playerAudio;
     public PlayerUIManager playerUIManager;
     public int MaxHP = 100;
     int hp;
@@ -49,6 +50,8 @@ public class PlayerManager : MonoBehaviour
 
         rb = GetComponent<Rigidbody>(); // 物理取得
         animator = GetComponent<Animator>();// animatorコンポーネント取得
+
+        playerAudio = GetComponent<PlayerAudioSouce>();
 
         HideColliderWeapon(); // 武器のコリジョンを初期セットでオフ
     }
@@ -233,6 +236,11 @@ public class PlayerManager : MonoBehaviour
     public void ShowColliderWeapon()
     {
         weaponCollider.enabled = true;// 有効
+
+        if(playerAudio != null || IsAttack)
+        {
+            playerAudio.PlayerAtackSE();
+        }
     }
 
     // プレイヤーダメージ処理

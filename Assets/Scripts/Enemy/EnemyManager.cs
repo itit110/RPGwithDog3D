@@ -22,6 +22,8 @@ public class EnemyManager : MonoBehaviour
 
     // エネミー情報関連
     public EnemyUIManager enemyUIManager;
+    public EnemyAudioSouce enemyAudio;
+
     public int MaxHP = 100;
     int hp = 100;
     bool IsDie;
@@ -47,6 +49,9 @@ public class EnemyManager : MonoBehaviour
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>(); // エネミー自身取得
         agent.destination = target.position; // エージェントの追尾対象
+
+        //enemyAudio = GetComponent<EnemyAudioSouce>();
+        enemyAudio = GetComponentInChildren<EnemyAudioSouce>();
 
         HideColliderWeapon();
     }
@@ -77,6 +82,8 @@ public class EnemyManager : MonoBehaviour
     public void ShowColliderWeapon()
     {
         weaponCollider.enabled = true;
+
+        enemyAudio.EnemyAtackSE();
     }
 
     // 敵ダメージ処理
